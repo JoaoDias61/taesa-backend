@@ -1,20 +1,21 @@
 import pandas as pd
 
-class DataProcessor:
+class filterData:
     def __init__(self, cursor):
         self.cursor = cursor
 
     def process_data(self):
         query = '''
-        SELECT
-            f.Nome AS nomeFamilia,
-            e.CodigoOperacional
-        FROM
-            Equipamento AS e
-        LEFT JOIN
-            Familia AS f ON f.TucId = e.TucId
-        ORDER BY
-            f.Id, e.Id;
+        SELECT 
+               f.Nome
+            ,  e.CodigoOperacional
+        FROM Equipamento AS e
+        INNER JOIN EquipamentoInstalacaoEletrica AS eie 
+            ON e.Id = eie.EquipamentoId
+        INNER JOIN InstalacaoEletrica AS ie 
+            ON  ie.Id = eie.InstalacaoEletricaId
+        INNER JOIN Familia AS f 
+            ON f.Id = e.FamiliaId
         '''
 
         self.cursor.execute(query)
@@ -24,8 +25,8 @@ class DataProcessor:
         data = [(nome, codigo) for nome, codigo in resultado_sql]
 
         df = pd.DataFrame(data, columns=['nomeFamilia', 'codigoOperacional'])
-        df['nomeFamilia'] = df['nomeFamilia'].str.upper()
-        df['codigoOperacional'] = df['codigoOperacional'].str.upper()
+        df['nomeFamilia'] = df['nomeFamilia']
+        df['codigoOperacional'] = df['codigoOperacional']
 
         df = df.drop_duplicates().dropna()
 

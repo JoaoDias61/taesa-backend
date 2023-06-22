@@ -1,8 +1,8 @@
-from src.model.filterData import DataProcessor
+from src.model.calculateTransformerInformation import calculateTransformerInformation
+from src.model.filterData import filterData
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-import uvicorn
 import pyodbc
 import os
 
@@ -20,10 +20,14 @@ cursor = conn.cursor()
 
 app = FastAPI()
 
-@app.get("/api/data")
+@app.get("/filterData")
 def get_data():
-    data_processor = DataProcessor(cursor)
+    data_processor = filterData(cursor)
     data = data_processor.process_data()
     grouped_data = data.groupby('nomeFamilia')['codigoOperacional'].apply(list).reset_index()
-    print(grouped_data)
     return grouped_data.to_dict(orient='records')
+
+@app.post("/calculateTransformerInformation/")
+async def calculate_transformer_information(codigo_operacional: str, familia: str):
+          resultado = calculateTransformerInformation(cursor, codigo_operacional, familia).executar_calculo()
+          return resultado.to_dict()
