@@ -17,9 +17,6 @@ class calculateTransformerInformation:
             , e.Id AS idEquipamento
             , e.Descricao AS descricaoEquipamento
             , Variavel.Codigo As VariavelCodigo
-            , EntradaVariavel.Valor As ValorVariavel
-            , e.FamiliaOnsId
-            , e.TucId
             , f.Id
             , f.Abreviatura
             , f.Nome
@@ -48,20 +45,29 @@ class calculateTransformerInformation:
                 ON  ie.Id = eie.InstalacaoEletricaId
             INNER JOIN Familia AS f 
                 ON f.TucId = e.TucId
-
+			INNER JOIN EngineCalculo.CategoriaVariavel AS cv 
+				ON cv.Id = Variavel.CategoriaVariavelId
         WHERE 1 = 1
-            AND f.Nome = ?
-            AND e.CodigoOperacional = ?
+            AND f.Nome = 'Autotransformador'
+            AND e.CodigoOperacional = '05E3'
             AND Calculo.Codigo IN ('IE_TR_ATV_GP', 'IE_TR_ATV_H2OP', 'REC_MOL_BOLHAS', 'IE_TR_BCH_CAP', 'BCH_CAP_REATOR', 'IE_TR_BCH_TD', 'BCH_TD_REATOR', 'IE_TR_BCH_FUGA')
-            -- AND FILTRO PARA O SUBSISTEMA
-
+			-- AND cv.Descricao LIKE '%Parte Ativa%'					
+						-- Parte Ativa
+						-- Comutador sobcarga
+						-- Parte Ativa
+						-- Acessórios
+						-- Ambiente
+						-- Tanque
+						-- Resfriamento
+						-- Preservação do Óleo Isolante 
+						-- Bucha
         ORDER BY ie.Descricao,
-                e.Descricao;
+			     e.Descricao;
         '''
         self.cursor.execute(query, self.familia, self.codigo_operacional)
         resultado_sql = self.cursor.fetchall()
 
-        colunas = ['CodigoCalculo', 'ResultadoCalculo', 'UltimaAtualizacaoCalculo', 'descricaoInstalacaoEletrica', 'idEquipamento', 'descricaoEquipamento', 'VariavelCodigo', 'ValorVariavel', 'FamiliaOnsId', 'TucId', 'Id', 'Abreviatura', 'Nome']
+        colunas = ['CodigoCalculo', 'ResultadoCalculo', 'UltimaAtualizacaoCalculo', 'descricaoInstalacaoEletrica', 'idEquipamento', 'descricaoEquipamento', 'VariavelCodigo', 'Id', 'Abreviatura', 'Nome']
 
         dados = [dict(zip(colunas, row)) for row in resultado_sql]
         df = pd.DataFrame(dados)
