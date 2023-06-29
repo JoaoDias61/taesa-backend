@@ -29,7 +29,7 @@ class CalculateInput(BaseModel):
     familia: str
     descricao: str
 
-@app.get("/filterData")
+@app.get("/filter_data")
 def get_data():
     data_processor = filter_data(cursor)
     data = data_processor.filter_data_exec()
