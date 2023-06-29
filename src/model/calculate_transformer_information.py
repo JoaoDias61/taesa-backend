@@ -1,12 +1,12 @@
 import pandas as pd
 
-class calculateTransformerInformation:
-    def __init__(self, cursor, codigo_operacional, familia):
+class calculate_transformer_information:
+    def __init__(self, cursor, descricao, familia):
         self.cursor = cursor
-        self.codigo_operacional = codigo_operacional
+        self.descricao = descricao
         self.familia = familia
 
-    def executar_calculo(self):
+    def calculate_transformer_information_exec(self):
 
         query = '''
         SELECT DISTINCT
@@ -64,7 +64,7 @@ class calculateTransformerInformation:
         ORDER BY ie.Descricao,
 			     e.Descricao;
         '''
-        self.cursor.execute(query, self.familia, self.codigo_operacional)
+        self.cursor.execute(query, self.familia, self.descricao)
         resultado_sql = self.cursor.fetchall()
 
         colunas = ['CodigoCalculo', 'ResultadoCalculo', 'UltimaAtualizacaoCalculo', 'descricaoInstalacaoEletrica', 'idEquipamento', 'descricaoEquipamento', 'VariavelCodigo', 'Id', 'Abreviatura', 'Nome']

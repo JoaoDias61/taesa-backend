@@ -1,13 +1,13 @@
 import pandas as pd
 
 
-class riskMatrix:
+class risk_matrix:
     def __init__(self, cursor, codigo_operacional, familia):
         self.cursor = cursor
         self.codigo_operacional = codigo_operacional
         self.familia = familia
 
-    def processRiskMatrix(self):
+    def risk_matrix_exec(self):
         query = '''
         SELECT DISTINCT
                       Calculo.Codigo AS CodigoCalculo
@@ -48,7 +48,7 @@ class riskMatrix:
 
                 WHERE 1 = 1
                     AND f.Nome = ?
-                    AND e.CodigoOperacional = ?
+                    AND e.Descricao = ?
                     AND RevisaoVariavel.TipoOrigem = 4 --Variágel de origem do ECM
                     AND EntradaVariavel.DataMedicao > '2023-05-29 23:59:59' 
                     AND e.EquipamentoSigmaId is not null 

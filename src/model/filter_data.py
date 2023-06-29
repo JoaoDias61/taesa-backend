@@ -1,14 +1,14 @@
 import pandas as pd
 
-class filterData:
+class filter_data:
     def __init__(self, cursor):
         self.cursor = cursor
 
-    def process_data(self):
+    def filter_data_exec(self):
         query = '''
         SELECT 
                f.Nome
-            ,  e.CodigoOperacional
+            ,  e.Descricao
         FROM Equipamento AS e
         INNER JOIN EquipamentoInstalacaoEletrica AS eie 
             ON e.Id = eie.EquipamentoId
@@ -21,12 +21,9 @@ class filterData:
         self.cursor.execute(query)
         resultado_sql = self.cursor.fetchall()
 
-        # Extrair os valores individuais de cada tupla
         data = [(nome, codigo) for nome, codigo in resultado_sql]
 
-        df = pd.DataFrame(data, columns=['nomeFamilia', 'codigoOperacional'])
-        df['nomeFamilia'] = df['nomeFamilia']
-        df['codigoOperacional'] = df['codigoOperacional']
+        df = pd.DataFrame(data, columns=['nomeFamilia', 'Descricao'])
 
         df = df.drop_duplicates().dropna()
 

@@ -1,6 +1,9 @@
-from src.model.calculateTransformerInformation import calculateTransformerInformation
-from src.model.riskMatrix import riskMatrix
-from src.model.filterData import filterData
+from src.model.calculate_transformer_information import calculate_transformer_information
+from src.model.health_index_per_equipment import health_index_per_equipment 
+from src.model.health_index_per_subsystem import health_index_per_subsystem
+
+from src.model.risk_matrix import risk_matrix
+from src.model.filter_data import filter_data
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -23,14 +26,14 @@ cursor = conn.cursor()
 app = FastAPI()
 
 class CalculateInput(BaseModel):
-    codigo_operacional: str
     familia: str
+    descricao: str
 
 @app.get("/filterData")
 def get_data():
-    data_processor = filterData(cursor)
-    data = data_processor.process_data()
-    grouped_data = data.groupby('nomeFamilia')['codigoOperacional'].apply(list).reset_index()
+    data_processor = filter_data(cursor)
+    data = data_processor.filter_data_exec()
+    grouped_data = data.groupby('nomeFamilia')['Descricao'].apply(list).reset_index()
     result = grouped_data.to_dict(orient='records')
     info_adicional = {
         "subsistemas": [
@@ -48,17 +51,33 @@ def get_data():
     result.append(info_adicional)
     return result
 
-@app.post("/riskMatrix/")
-async def calculate_transformer_information(data: CalculateInput):
-          codigo_operacional = data.codigo_operacional
+@app.post("/risk_matrix/")
+async def calculate_risk_matrix(data: CalculateInput):
+          descricao = data.descricao
           familia = data.familia
-          resultado = riskMatrix(cursor, codigo_operacional, familia).processRiskMatrix()
+          resultado = risk_matrix(cursor, descricao, familia).risk_matrix_exec()
           return resultado.to_dict(orient='list')
 
 
-@app.post("/calculateTransformerInformation/")
-async def calculate_transformer_information(data: CalculateInput):
-          codigo_operacional = data.codigo_operacional
+@app.post("/calculate_transformer_information/")
+async def calculate_transformer_information_post(data: CalculateInput):
+          descricao = data.descricao
           familia = data.familia
-          resultado = calculateTransformerInformation(cursor, codigo_operacional, familia).executar_calculo()
+          resultado = calculate_transformer_information(cursor, descricao, familia).calculate_transformer_information_exec()
           return resultado.to_dict()
+
+@app.post("/health_index_per_equipment/")
+async def health_index_per_equipment_post(data: CalculateInput):
+          descricao = data.descricao
+          familia = data.familia
+          calculate_health = health_index_per_equipment(cursor, descricao, familia).health_index_per_equipment_exec()
+          resultado = calculate_health
+          return resultado.to_dict(orient='list')
+
+@app.post("/health_index_per_subsystem/")
+async def health_index_per_subsystem_post(data: CalculateInput):
+          descricao = data.descricao
+          familia = data.familia
+          calculate_health = health_index_per_subsystem(cursor, descricao, familia).health_index_per_subsystem_exec()
+          resultado = calculate_health
+          return resultado.to_dict(orient='list')
