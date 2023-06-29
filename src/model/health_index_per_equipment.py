@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class health_index_per_equipment:
     def __init__(self, cursor, descricao, familia):
         self.cursor = cursor

@@ -51,9 +51,8 @@ class health_index_per_subsystem:
                     --AND Calculo.UltimaAtualizacao > '2023-06-24'
                     AND f.Nome = ?
                     AND e.Descricao = ?
-                    AND gc.Descricao = 'Tanque'
                     AND gc.Descricao = 'Health Index do Subsistema'
-                    AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) => '2023-05-30'
+                    AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) = '2023-05-30'
                     -- AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) <= '2021-05-28'
                 GROUP BY
                     gc.Descricao,
