@@ -64,9 +64,8 @@ class calculate_ageing_water_oil_formation:
         '''
         self.cursor.execute(query, self.descricao)
         resultado_sql = self.cursor.fetchall()
-
-        colunas = ['Descricao', 'CodigoCalculo', 'Descricao', 'UltimaAtualizacaoCalculo', 'descricaoEquipamento', 'descricaoInstalacaoEletrica', 'HealtIndex']
-
+        
+        colunas = ['DescricaoEquipamento', 'DescricaoInstalacaoEletrica', 'CodigoVariavel', 'DescricaoVariavel', 'Valor', 'DataMedicao']
         dados = [dict(zip(colunas, row)) for row in resultado_sql]
         df = pd.DataFrame(dados)
 

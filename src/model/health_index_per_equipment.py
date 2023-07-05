@@ -1,9 +1,8 @@
 import pandas as pd
 
 class health_index_per_equipment:
-    def __init__(self, cursor, descricao, familia):
+    def __init__(self, cursor, familia):
         self.cursor = cursor
-        self.descricao = descricao
         self.familia = familia
 
     def health_index_per_equipment_exec(self):
@@ -47,9 +46,7 @@ class health_index_per_equipment:
                         ON gc.Id = Calculo.GrupoCalculoId
                 WHERE
                     1 = 1
-                    --AND Calculo.UltimaAtualizacao > '2023-06-24'
                     AND f.Nome = ?
-                    AND e.Descricao = ?
                     AND gc.Descricao = 'Health Index do Subsistema'
                 GROUP BY
                     gc.Descricao,
@@ -63,7 +60,7 @@ class health_index_per_equipment:
                     ie.Descricao,
                     e.Descricao
         '''
-        self.cursor.execute(query, self.familia, self.descricao)
+        self.cursor.execute(query, self.familia)
         resultado_sql = self.cursor.fetchall()
 
         colunas = ['Descricao', 'CodigoCalculo', 'Descricao', 'UltimaAtualizacaoCalculo',

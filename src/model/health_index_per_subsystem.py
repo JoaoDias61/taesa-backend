@@ -1,8 +1,7 @@
 import pandas as pd
 
-
 class health_index_per_subsystem:
-    def __init__(self, cursor, descricao, familia):
+    def __init__(self, cursor, familia, descricao):
         self.cursor = cursor
         self.descricao = descricao
         self.familia = familia
@@ -48,14 +47,14 @@ class health_index_per_subsystem:
                         ON gc.Id = Calculo.GrupoCalculoId
                 WHERE
                     1 = 1
-                    --AND Calculo.UltimaAtualizacao > '2023-06-24'
                     AND f.Nome = ?
                     AND e.Descricao = ?
                     AND gc.Descricao = 'Health Index do Subsistema'
-                    AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) = '2023-05-30'
-                    -- AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) <= '2021-05-28'
+                    --AND Calculo.UltimaAtualizacao > '2023-06-24'
+                    --AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) < '2023-05-30'
+                    --AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) > '2021-05-28'
                 GROUP BY
-                    gc.Descricao,
+                    gc.Descricao, 
                     Calculo.Codigo,
                     Calculo.Descricao,
                     e.Descricao,
