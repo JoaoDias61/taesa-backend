@@ -2,19 +2,20 @@ import pandas as pd
 
 
 class risk_matrix:
-    def __init__(self, cursor, descricao, familia):
+    def __init__(self, cursor, description, family):
         self.cursor = cursor
-        self.descricao = descricao
-        self.familia = familia
+        self.description = description
+        self.family = family
+        pri
 
     def risk_matrix_exec(self):
         query = '''
         EXEC [Treetech].[SPEngine_CalculoResultado]
         '''
         self.cursor.execute(query)
-        resultado_sql = self.cursor.fetchall()
+        result_sql = self.cursor.fetchall()
 
-        colunas = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica', 'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 
+        columns = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica', 'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 
                    'BCH_OLEO_TERC', 'TESTE_VALOR_VARIVEL', 'I2_CRI_RAPFT_RAPCON', 'REC_MOL_BCH_AT', 'IE_TR_AMB', 'IE_TR', 'IE_TR_ATV_FQ', 'DEN_OLEO', 
                    'REC_MOL_MULTIGAS_H2', 'I2_CRI_AUTONOMIA', 'MON_H2OP', 'DIM_ESTRATEGICO', 'DADOS_OLEO', 'REC_MOL_RESF', 'REC_MOL', 'BCH_CAD_TERC', 
                    'BCH_VAZ_TERC', 'NUM_ATV', 'REC_MOL_BOLHAS', 'INC_OLEO_BOL', 'BCH_TMP_SEC', 'IE_TR_OUT', 'DADOS_BCH', 'DIM_REPUTACAO', 'MON_BCH_MT', 
@@ -31,20 +32,20 @@ class risk_matrix:
                    'BCH_CAD_PRIM', 'INC_BCH_CAP', 'IE_TR_ATV_H2OP', 'IE_TR_CMT', 'DIM_CONFORMIDADE', 'I2_CRI_TEMPO_DESLOC', 'IE_TR_ATV_EV', 'REC_MOL_BCH_MT', 'IE_TR_ACES_EV', 
                    'I2_CRI_REPOSICAO', 'IE_TR_ATV_GP', 'I2_CRI_SEGURANCA', 'IE_TR_CMT_TM', 'DADOS_CMT', 'BCH_OLEO_N', 'BCH_CF_TERC', 'IE_TR_BCH_OLEO', 'BCH_OLEO_PRIM', 'IE_TR_OLEO_EV', 'IE_TR_OLEO_BOL', 'INC_EQP', 'INC_ATV', 'NUM_CMT', 'BCH_CAP_REATOR', 'I2_CRI_AMBIENTE', 'IE_TR_ATV_CAD', 'MON_TORQUE_OLTC', 'IE_TR_AMB_EV', 'IE_TR_TQP_EV', 'REC_MOL_IEMAX', 'CRITERIOS_REC', 'BCH_TD_TERC', 'INC_ATV_GP', 'NUM_OLEO', 'MON_MULTIGAS_H2', 'MON_BOLSA', 'FASE_EQP', 'DIM_OPERACIONAL', 'REC_MOL_MULTIGAS', 'IE_TR_CMT_EV', 'IE_TR_BCH_EV', 'BCH_CAP_PRIM', 'MON_ENV_ISOL', 'MON_DESG_OLTC', 'REC_MOL_BOLSA', 'NIVEL_RISCO', 'INC_CMT_OLEO', 'IE_TR_BCH', 'BCH_CF_SEC', 'IE_TR_RESF_EV', 'INC_ATV_TMP', 'IE_TR_ACES_CAD', 'MON_TMP', 'BCH_TD_SEC', 'IE_TR_ATV_DGA', 'DIM_FINANCEIRO', 'REC_MOL_UMID_OLTC']
 
-        colunas_matrix = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica',
+        columns_matrix = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica',
                           'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 'IE_TR', 'I2_TR', 'IR_TR']
 
-        dados = [dict(zip(colunas, row)) for row in resultado_sql]
-        df = pd.DataFrame(dados)[colunas_matrix]
+        data = [dict(zip(columns, row)) for row in result_sql]
+        df = pd.DataFrame(data)[columns_matrix]
 
-        if self.familia and self.descricao:
-            df = df[(df['Familia'] == self.familia) & (df['EquipamentoDescricao'] == self.descricao)]
+        if self.family and self.description:
+            df = df[(df['Familia'] == self.family) & (df['EquipamentoDescricao'] == self.description)]
 
-        if self.familia:
-            df = df[df['Familia'] == self.familia]
+        if self.family:
+            df = df[df['Familia'] == self.family]
 
-        if self.descricao:
-            df = df[df['EquipamentoDescricao'] == self.descricao]
+        if self.description:
+            df = df[df['EquipamentoDescricao'] == self.description]
         
 
         return df

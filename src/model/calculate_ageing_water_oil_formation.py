@@ -1,9 +1,9 @@
 import pandas as pd
 
 class calculate_ageing_water_oil_formation:
-    def __init__(self, cursor, descricao):
+    def __init__(self, cursor, description):
         self.cursor = cursor
-        self.descricao = descricao
+        self.description = description
 
     def calculate_ageing_water_oil_formation_exec(self):
         query = '''
@@ -62,11 +62,11 @@ class calculate_ageing_water_oil_formation:
                 ORDER BY CAST(crv.DataMedicao AS DATE) DESC
                         , e.Descricao DESC
         '''
-        self.cursor.execute(query, self.descricao)
-        resultado_sql = self.cursor.fetchall()
+        self.cursor.execute(query, self.description)
+        result_sql = self.cursor.fetchall()
         
-        colunas = ['DescricaoEquipamento', 'DescricaoInstalacaoEletrica', 'CodigoVariavel', 'DescricaoVariavel', 'Valor', 'DataMedicao']
-        dados = [dict(zip(colunas, row)) for row in resultado_sql]
-        df = pd.DataFrame(dados)
+        columns = ['DescricaoEquipamento', 'DescricaoInstalacaoEletrica', 'CodigoVariavel', 'DescricaoVariavel', 'Valor', 'DataMedicao']
+        data = [dict(zip(columns, row)) for row in result_sql]
+        df = pd.DataFrame(data)
 
         return df

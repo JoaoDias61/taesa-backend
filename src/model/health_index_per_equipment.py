@@ -1,9 +1,9 @@
 import pandas as pd
 
 class health_index_per_equipment:
-    def __init__(self, cursor, familia):
+    def __init__(self, cursor, family):
         self.cursor = cursor
-        self.familia = familia
+        self.family = family
 
     def health_index_per_equipment_exec(self):
 
@@ -60,12 +60,12 @@ class health_index_per_equipment:
                     ie.Descricao,
                     e.Descricao
         '''
-        self.cursor.execute(query, self.familia)
-        resultado_sql = self.cursor.fetchall()
+        self.cursor.execute(query, self.family)
+        result_sql = self.cursor.fetchall()
 
-        colunas = ['Descricao', 'CodigoCalculo', 'Descricao', 'UltimaAtualizacaoCalculo',
+        columns = ['Descricao', 'CodigoCalculo', 'Descricao', 'UltimaAtualizacaoCalculo',
                    'descricaoEquipamento', 'descricaoInstalacaoEletrica', 'HealtIndex']
-        dados = [dict(zip(colunas, row)) for row in resultado_sql]
-        df = pd.DataFrame(dados)
+        data = [dict(zip(columns, row)) for row in result_sql]
+        df = pd.DataFrame(data)
 
         return df

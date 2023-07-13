@@ -1,3 +1,4 @@
+from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix
 from src.model.calculate_ageing_water_oil_formation import calculate_ageing_water_oil_formation
 from src.model.calculate_transformer_information import calculate_transformer_information
 from src.model.health_index_per_equipment import health_index_per_equipment
@@ -34,7 +35,7 @@ def get_data():
     grouped_data = data.groupby('nomeFamilia')[
         'Descricao'].apply(list).reset_index()
     result = grouped_data.to_dict(orient='records')
-    info_adicional = {
+    info_add = {
         "subsistemas": [
             "Parte Ativa",
             "Comutador sobrecarga",
@@ -47,34 +48,33 @@ def get_data():
             "Bucha"
         ]
     }
-    result.append(info_adicional)
+    result.append(info_add)
     return result
 
 
 @app.post("/health_index_per_equipment/")
-async def health_index_per_equipment_post(familia: str):
+async def health_index_per_equipment_post(request: HealthIndexPerEquipment):
     calculate_health = health_index_per_equipment(
-        cursor, familia).health_index_per_equipment_exec()
-    resultado = calculate_health
-    return resultado.to_dict(orient='list')
+        cursor, request.family).health_index_per_equipment_exec()
+    result = calculate_health
+    return result.to_dict(orient='list')
 
 
 @app.post("/health_index_per_subsystem/")
-async def health_index_per_subsystem_post(familia: str, descricao: str):
+async def health_index_per_subsystem_post(request: HealthIndexPerSubsystem):
     calculate_health = health_index_per_subsystem(
-        cursor, familia, descricao).health_index_per_subsystem_exec()
-    resultado = calculate_health
-    return resultado.to_dict(orient='list')
+        cursor, request.initial_date, request.final_date, request.family, request.description).health_index_per_subsystem_exec()
+    return calculate_health.to_dict(orient='list')
 
 
 @app.post("/calculate_ageing_water_oil_formation/")
-async def calculate_ageing_water_oil_formation_post(descricao: str):
+async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWaterOilFormation):
     calculate_health = calculate_ageing_water_oil_formation(
-        cursor, descricao).calculate_ageing_water_oil_formation_exec()
+        cursor, request.description).calculate_ageing_water_oil_formation_exec()
     return calculate_health.to_dict(orient='list')
 
 
 @app.post("/risk_matrix/")
-async def calculate_risk_matrix(familia: Optional[str] = None, descricao: Optional[str] = None):
-    resultado = risk_matrix(cursor, descricao, familia).risk_matrix_exec()
-    return resultado.to_dict(orient='list')
+async def calculate_risk_matrix(request: RiskMatrix):
+    result = risk_matrix(cursor, request.description, request.family).risk_matrix_exec()
+    return result.to_dict(orient='list')
