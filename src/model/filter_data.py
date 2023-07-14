@@ -19,11 +19,11 @@ class filter_data:
         '''
 
         self.cursor.execute(query)
-        resultado_sql = self.cursor.fetchall()
+        result_sql = self.cursor.fetchall()
 
-        data = [(nome, codigo) for nome, codigo in resultado_sql]
+        data = [(name, cod) for name, cod in result_sql]
 
-        df = pd.DataFrame(data, columns=['nomeFamilia', 'Descricao'])
+        df = pd.DataFrame(data, columns=['familyName', 'description'])
 
         df = df.drop_duplicates().dropna()
 

@@ -3,6 +3,7 @@ from src.model.calculate_ageing_water_oil_formation import calculate_ageing_wate
 from src.model.calculate_transformer_information import calculate_transformer_information
 from src.model.health_index_per_equipment import health_index_per_equipment
 from src.model.health_index_per_subsystem import health_index_per_subsystem
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.model.risk_matrix import risk_matrix
 from src.model.filter_data import filter_data
@@ -26,17 +27,16 @@ conn = pyodbc.connect(connection_string)
 cursor = conn.cursor()
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-@app.get("/filter_data")
-def get_data():
-    data_processor = filter_data(cursor)
-    data = data_processor.filter_data_exec()
-    grouped_data = data.groupby('nomeFamilia')[
-        'Descricao'].apply(list).reset_index()
-    result = grouped_data.to_dict(orient='records')
-    info_add = {
-        "subsistemas": [
+INFO_SUB = [
             "Parte Ativa",
             "Comutador sobrecarga",
             "Parte Ativa",
@@ -47,9 +47,19 @@ def get_data():
             "Preservação do Óleo Isolante",
             "Bucha"
         ]
+
+@app.get("/filter_data")
+def get_data():
+    data_processor = filter_data(cursor)
+    data = data_processor.filter_data_exec()
+    grouped_data = data.groupby('familyName')[
+        'description'].apply(list).reset_index()
+    result = grouped_data.to_dict(orient='records')
+    json_info = {
+        "familyEquipment": result,
+        "subsystems": INFO_SUB
     }
-    result.append(info_add)
-    return result
+    return json_info
 
 
 @app.post("/health_index_per_equipment/")
@@ -77,4 +87,4 @@ async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWate
 @app.post("/risk_matrix/")
 async def calculate_risk_matrix(request: RiskMatrix):
     result = risk_matrix(cursor, request.description, request.family).risk_matrix_exec()
-    return result.to_dict(orient='list')
+    return result.to_dict(orient='records')

@@ -6,7 +6,6 @@ class risk_matrix:
         self.cursor = cursor
         self.description = description
         self.family = family
-        pri
 
     def risk_matrix_exec(self):
         query = '''
