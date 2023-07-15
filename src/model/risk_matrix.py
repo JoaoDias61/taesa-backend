@@ -29,10 +29,14 @@ class risk_matrix:
                    'IE_TR_CMT_FQ', 'IR_TR', 'IE_TR_AMB_CAD', 'IE_TR_BCH_TD', 'INC_ATV_H2', 'I2_CRI_RAPFT_RAPTAE', 'IE_TR_CMT_OP', 'INC_ATV_H2OP', 'I2_CRI_MANUTENCAO', 
                    'BCH_TD_REATOR', 'INC_BCH', 'IE_TR_CMT_CAD', 'BCH_VAZ_PRIM', 'MON_BOLHAS', 'BCH_VAZ_N', 'IE_TR_ATV', 'I2_TR', 'DADOS_ATV', 'IE_TR_ATV_TMP', 'IE_TR_OLEO_CAD',
                    'BCH_CAD_PRIM', 'INC_BCH_CAP', 'IE_TR_ATV_H2OP', 'IE_TR_CMT', 'DIM_CONFORMIDADE', 'I2_CRI_TEMPO_DESLOC', 'IE_TR_ATV_EV', 'REC_MOL_BCH_MT', 'IE_TR_ACES_EV', 
-                   'I2_CRI_REPOSICAO', 'IE_TR_ATV_GP', 'I2_CRI_SEGURANCA', 'IE_TR_CMT_TM', 'DADOS_CMT', 'BCH_OLEO_N', 'BCH_CF_TERC', 'IE_TR_BCH_OLEO', 'BCH_OLEO_PRIM', 'IE_TR_OLEO_EV', 'IE_TR_OLEO_BOL', 'INC_EQP', 'INC_ATV', 'NUM_CMT', 'BCH_CAP_REATOR', 'I2_CRI_AMBIENTE', 'IE_TR_ATV_CAD', 'MON_TORQUE_OLTC', 'IE_TR_AMB_EV', 'IE_TR_TQP_EV', 'REC_MOL_IEMAX', 'CRITERIOS_REC', 'BCH_TD_TERC', 'INC_ATV_GP', 'NUM_OLEO', 'MON_MULTIGAS_H2', 'MON_BOLSA', 'FASE_EQP', 'DIM_OPERACIONAL', 'REC_MOL_MULTIGAS', 'IE_TR_CMT_EV', 'IE_TR_BCH_EV', 'BCH_CAP_PRIM', 'MON_ENV_ISOL', 'MON_DESG_OLTC', 'REC_MOL_BOLSA', 'NIVEL_RISCO', 'INC_CMT_OLEO', 'IE_TR_BCH', 'BCH_CF_SEC', 'IE_TR_RESF_EV', 'INC_ATV_TMP', 'IE_TR_ACES_CAD', 'MON_TMP', 'BCH_TD_SEC', 'IE_TR_ATV_DGA', 'DIM_FINANCEIRO', 'REC_MOL_UMID_OLTC']
+                   'I2_CRI_REPOSICAO', 'IE_TR_ATV_GP', 'I2_CRI_SEGURANCA', 'IE_TR_CMT_TM', 'DADOS_CMT', 'BCH_OLEO_N', 'BCH_CF_TERC', 'IE_TR_BCH_OLEO', 'BCH_OLEO_PRIM', 'IE_TR_OLEO_EV', 
+                   'IE_TR_OLEO_BOL', 'INC_EQP', 'INC_ATV', 'NUM_CMT', 'BCH_CAP_REATOR', 'I2_CRI_AMBIENTE', 'IE_TR_ATV_CAD', 'MON_TORQUE_OLTC', 'IE_TR_AMB_EV', 'IE_TR_TQP_EV', 'REC_MOL_IEMAX', 
+                   'CRITERIOS_REC', 'BCH_TD_TERC', 'INC_ATV_GP', 'NUM_OLEO', 'MON_MULTIGAS_H2', 'MON_BOLSA', 'FASE_EQP', 'DIM_OPERACIONAL', 'REC_MOL_MULTIGAS', 'IE_TR_CMT_EV', 'IE_TR_BCH_EV',
+                     'BCH_CAP_PRIM', 'MON_ENV_ISOL', 'MON_DESG_OLTC', 'REC_MOL_BOLSA', 'NIVEL_RISCO', 'INC_CMT_OLEO', 'IE_TR_BCH', 'BCH_CF_SEC', 'IE_TR_RESF_EV', 'INC_ATV_TMP', 'IE_TR_ACES_CAD', 
+                     'MON_TMP', 'BCH_TD_SEC', 'IE_TR_ATV_DGA', 'DIM_FINANCEIRO', 'REC_MOL_UMID_OLTC']
 
         columns_matrix = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica',
-                          'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 'IE_TR', 'I2_TR', 'IR_TR']
+                          'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 'IE_TR', 'I2_TR', 'IR_TR', "INC_ATV"]
 
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)[columns_matrix]
@@ -46,5 +50,4 @@ class risk_matrix:
         if self.description:
             df = df[df['EquipamentoDescricao'] == self.description]
         
-
         return df

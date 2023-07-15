@@ -49,7 +49,7 @@ class health_index_per_subsystem:
                 		, ie.Descricao
                         , e.Descricao
         '''
-        self.cursor.execute(query, self.initial_date, self.final_date, self.family, self.description)
+        self.cursor.execute(query, self.final_date, self.initial_date, self.family, self.description)
         result_sql = self.cursor.fetchall()
 
         columns = ['Descricao', 'descricaoInstalacaoEletrica', 'Descricao', 'CodigoCalculo',
