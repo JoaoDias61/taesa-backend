@@ -7,6 +7,7 @@ class HealthIndexPerEquipment(BaseModel):
 class HealthIndexPerSubsystem(BaseModel):
     family: str
     description: str
+    subsystem: str
     initial_date: str
     final_date: str
 
@@ -15,6 +16,7 @@ class HealthIndexPerSubsystem(BaseModel):
     description: str
     initial_date: str
     final_date: str
+    subsystem: Optional[str] = None
     
 class CalculateAgeingWaterOilFormation(BaseModel):
     description: str

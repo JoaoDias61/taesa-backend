@@ -6,9 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.model.risk_matrix import risk_matrix
 from src.model.filter_data import filter_data
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
 import pyodbc
 import os
 
@@ -71,9 +71,8 @@ async def health_index_per_equipment_post(request: HealthIndexPerEquipment):
 @app.post("/health_index_per_subsystem/")
 async def health_index_per_subsystem_post(request: HealthIndexPerSubsystem):
     calculate_health = health_index_per_subsystem(
-        cursor, request.initial_date, request.final_date, request.family, request.description).health_index_per_subsystem_exec()
+        cursor, request.initial_date, request.final_date, request.family, request.description, request.subsystem).health_index_per_subsystem_exec()
     return calculate_health.to_dict(orient='records')
-
 
 @app.post("/calculate_ageing_water_oil_formation/")
 async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWaterOilFormation):

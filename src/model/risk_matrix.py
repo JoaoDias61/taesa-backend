@@ -36,7 +36,7 @@ class risk_matrix:
                      'MON_TMP', 'BCH_TD_SEC', 'IE_TR_ATV_DGA', 'DIM_FINANCEIRO', 'REC_MOL_UMID_OLTC']
 
         columns_matrix = ['EquipamentoId', 'PJ', 'Subestacao', 'Familia', 'TUC', 'FaseEletrica',
-                          'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 'IE_TR', 'I2_TR', 'IR_TR', "INC_ATV"]
+                          'CodigoOperacional', 'EquipamentoDescricao', 'JobId', 'IE_TR', 'I2_TR', 'IR_TR', "REC_MOL", "INC_ATV"]
 
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)[columns_matrix]

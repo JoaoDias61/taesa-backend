@@ -6,7 +6,6 @@ class health_index_per_equipment:
         self.family = family
 
     def health_index_per_equipment_exec(self):
-
         query = '''
                 SELECT
                     gc.Descricao,
@@ -47,7 +46,9 @@ class health_index_per_equipment:
                 WHERE
                     1 = 1
                     AND f.Nome = ?
+                    AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) = (SELECT MAX(CAST(UltimaAtualizacao AS DATE)) FROM [EngineCalculo].[CalculoResultado])
                     AND gc.Descricao = 'Health Index do Subsistema'
+                    AND Calculo.Descricao IN ('Ambiente', 'Bucha', 'Comutador Sob Carga', 'Outros Acessórios', 'Outros Dados', 'Parte Ativa', 'Preservação do Óleo Isolante', 'Resfriamento', 'Tanque Principal')
                 GROUP BY
                     gc.Descricao,
                     Calculo.Codigo,
