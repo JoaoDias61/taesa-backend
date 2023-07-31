@@ -24,3 +24,6 @@ class CalculateAgeingWaterOilFormation(BaseModel):
 class RiskMatrix(BaseModel):
     family: Optional[str] = None, 
     description: Optional[str] = None
+
+class RiskMatrixHistoric(BaseModel):
+    description: str

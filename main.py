@@ -1,4 +1,5 @@
-from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix
+from src.model.risk_matrix_historic import risk_matrix_historic
+from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix, RiskMatrixHistoric
 from src.model.calculate_ageing_water_oil_formation import calculate_ageing_water_oil_formation
 from src.model.health_index_per_equipment import health_index_per_equipment
 from src.model.health_index_per_subsystem import health_index_per_subsystem
@@ -85,4 +86,10 @@ async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWate
 async def calculate_risk_matrix(request: RiskMatrix):
     result = risk_matrix(cursor, request.description, request.family)
     filter_result = result.risk_matrix_exec()
+    return filter_result.to_dict(orient='records')
+
+@app.post("/risk_matrix_historic")
+async def calculate_risk_matrix_historic(request: RiskMatrixHistoric):
+    result = risk_matrix_historic(cursor, request.description)
+    filter_result = result.risk_matrix_historic_exec()
     return filter_result.to_dict(orient='records')

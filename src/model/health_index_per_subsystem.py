@@ -12,7 +12,7 @@ class health_index_per_subsystem:
 
     def get_calculo_descricao_in(self):
         if self.subsystem is not None:
-            return "Calculo.Descricao = ?"
+            return "Calculo.Descricao = (?)"
         else:
             return "Calculo.Descricao = ('Índice de Estado do Equipamento')"
 
