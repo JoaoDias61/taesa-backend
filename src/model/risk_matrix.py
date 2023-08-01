@@ -2,9 +2,9 @@ import pandas as pd
 
 
 class risk_matrix:
-    def __init__(self, cursor, description, family):
+    def __init__(self, cursor, id_equipment, family):
         self.cursor = cursor
-        self.description = description
+        self.id_equipment = id_equipment
         self.family = family
 
     def risk_matrix_exec(self):
@@ -41,13 +41,13 @@ class risk_matrix:
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)[columns_matrix]
 
-        if self.family and self.description:
-            df = df[(df['Familia'] == self.family) & (df['EquipamentoDescricao'] == self.description)]
+        if self.family and self.id_equipment:
+            df = df[(df['Familia'] == self.family) & (df['EquipamentoId'] == self.id_equipment)]
 
         if self.family:
             df = df[df['Familia'] == self.family]
 
-        if self.description:
-            df = df[df['EquipamentoDescricao'] == self.description]
+        if self.id_equipment:
+            df = df[df['EquipamentoId'] == self.id_equipment]
         
         return df

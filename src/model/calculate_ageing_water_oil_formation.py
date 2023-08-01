@@ -1,9 +1,17 @@
 import pandas as pd
 
 class calculate_ageing_water_oil_formation:
-    def __init__(self, cursor, description):
+    def __init__(self, cursor, id_equipment):
         self.cursor = cursor
-        self.description = description
+        self.id_equipment = id_equipment
+
+    def get_enrolment_number(self, descricao_variavel):
+        if 'Envelhecimento' in descricao_variavel:
+            return 'Envelhecimento'
+        elif 'Temperatura' in descricao_variavel:
+            return 'Temperatura'
+        else:
+            return 'Água'
 
     def calculate_ageing_water_oil_formation_exec(self):
         query = '''
@@ -36,10 +44,10 @@ class calculate_ageing_water_oil_formation:
                     ON  ie.Id = eie.InstalacaoEletricaId
 
                 WHERE 1 = 1
-                    AND e.Descricao = ?
+                    AND e.Id = ?
                     AND Variavel.Codigo IN (
                      'TFB1_ON_VALOR' -- Temperatura para formação de bolhas enrolamento 1
-                     , 'TFB2_ON_VALOR' -- Temperatura para formação de bolhas enrolamento 1
+                     , 'TFB2_ON_VALOR' -- Temperatura para formação de bolhas enrolamento 2
                      , 'TFB3_ON_VALOR' -- Temperatura para formação de bolhas enrolamento 1
                      , 'TA_OFF' -- Teor de Água por ensaio offline
                      , 'H2OP1_ON_VALOR' -- VALOR DO TEOR DE H20 NO PAPEL ENROLAMENTO 1
@@ -62,11 +70,15 @@ class calculate_ageing_water_oil_formation:
                 ORDER BY CAST(crv.DataMedicao AS DATE) DESC
                         , e.Descricao DESC
         '''
-        self.cursor.execute(query, self.description)
+        self.cursor.execute(query, self.id_equipment)
         result_sql = self.cursor.fetchall()
         
         columns = ['DescricaoEquipamento', 'DescricaoInstalacaoEletrica', 'CodigoVariavel', 'DescricaoVariavel', 'Valor', 'DataMedicao']
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)
+
+        df['Enrolamento'] = df['DescricaoVariavel'].apply(self.get_enrolment_number)
+
+        df = df.loc[df.groupby(['Enrolamento'])['Valor'].idxmax()]
 
         return df

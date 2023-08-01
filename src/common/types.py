@@ -13,17 +13,17 @@ class HealthIndexPerSubsystem(BaseModel):
 
 class HealthIndexPerSubsystem(BaseModel):
     family: str
-    description: str
+    id_equipment: int
     initial_date: str
     final_date: str
     subsystem: Optional[str] = None
     
 class CalculateAgeingWaterOilFormation(BaseModel):
-    description: str
+    id_equipment: int
 
 class RiskMatrix(BaseModel):
     family: Optional[str] = None, 
-    description: Optional[str] = None
+    id_equipment: Optional[int] = None
 
 class RiskMatrixHistoric(BaseModel):
     description: str

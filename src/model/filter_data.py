@@ -6,25 +6,23 @@ class filter_data:
 
     def filter_data_exec(self):
         query = '''
-        SELECT 
-               f.Nome
-            ,  e.Descricao
-        FROM Equipamento AS e
-        INNER JOIN EquipamentoInstalacaoEletrica AS eie 
-            ON e.Id = eie.EquipamentoId
-        INNER JOIN InstalacaoEletrica AS ie 
-            ON  ie.Id = eie.InstalacaoEletricaId
-        INNER JOIN Familia AS f 
-            ON f.Id = e.FamiliaId
-        '''
+            SELECT 
+            	e.Id
+            	, e.Descricao
+            	, f.Nome
+            FROM Equipamento AS e
+            INNER JOIN EquipamentoInstalacaoEletrica AS eie 
+            	ON e.Id = eie.EquipamentoId
+            INNER JOIN InstalacaoEletrica AS ie 
+            	ON  ie.Id = eie.InstalacaoEletricaId
+            INNER JOIN Familia AS f 
+            	ON f.Id = e.FamiliaId
+            '''
+        resultado = self.cursor.execute(query)
+        registro = resultado.fetchall()
 
-        self.cursor.execute(query)
-        result_sql = self.cursor.fetchall()
-
-        data = [(name, cod) for name, cod in result_sql]
-
-        df = pd.DataFrame(data, columns=['familyName', 'description'])
-
-        df = df.drop_duplicates().dropna()
+        colunas = [column[0] for column in self.cursor.description]
+        data = [dict(zip(colunas, row)) for row in registro]
+        df = pd.DataFrame(data)
 
         return df

@@ -1,9 +1,9 @@
 import pandas as pd
 
 class health_index_per_subsystem:
-    def __init__(self, cursor, initial_date, final_date, family, description, subsystem=None):
+    def __init__(self, cursor, initial_date, final_date, family, id_equipment, subsystem=None):
         self.cursor = cursor
-        self.description = description
+        self.id_equipment = id_equipment
         self.family = family
         self.initial_date = initial_date
         self.final_date = final_date
@@ -58,7 +58,7 @@ class health_index_per_subsystem:
             {self.get_calculo_descricao_in()}
             AND ExecucaoCalculoResultado.UltimaAtualizacao BETWEEN ? AND ?
             AND f.Nome = ?
-            AND e.Descricao = ?
+            AND e.Id = ?
 
                 ORDER BY CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) DESC
                     , ie.Descricao
@@ -66,9 +66,9 @@ class health_index_per_subsystem:
         '''
 
         if self.subsystem is not None:
-            self.cursor.execute(query, self.subsystem, self.initial_date, self.final_date, self.family, self.description)
+            self.cursor.execute(query, self.subsystem, self.initial_date, self.final_date, self.family, self.id_equipment)
         else:
-            self.cursor.execute(query, self.initial_date, self.final_date, self.family, self.description)
+            self.cursor.execute(query, self.initial_date, self.final_date, self.family, self.id_equipment)
         
         result_sql = self.cursor.fetchall()
 
