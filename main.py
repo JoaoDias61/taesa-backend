@@ -1,5 +1,6 @@
+from src.model.health_index_all_subsystem import health_index_all_subsystem
 from src.model.risk_matrix_historic import risk_matrix_historic
-from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix, RiskMatrixHistoric
+from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix, RiskMatrixHistoric
 from src.model.calculate_ageing_water_oil_formation import calculate_ageing_water_oil_formation
 from src.model.health_index_per_equipment import health_index_per_equipment
 from src.model.health_index_per_subsystem import health_index_per_subsystem
@@ -35,7 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 INFO_SUB = [
     "Parte Ativa",
     "Comutador sobrecarga",
@@ -68,17 +68,7 @@ def get_data():
 
         result_dict = {
             "familyEquipment": grouped_data['familyEquipment'].tolist(),
-            "subsystems": [
-                "Parte Ativa",
-                "Comutador sobrecarga",
-                "Parte Ativa",
-                "Acessórios",
-                "Ambiente",
-                "Tanque",
-                "Resfriamento",
-                "Preservação do Óleo Isolante",
-                "Bucha"
-            ]
+            "subsystems":INFO_SUB
         }
 
         return result_dict
@@ -100,6 +90,13 @@ async def health_index_per_subsystem_post(request: HealthIndexPerSubsystem):
     calculate_health = health_index_per_subsystem(
         cursor, request.initial_date, request.final_date, request.family, request.id_equipment, request.subsystem).health_index_per_subsystem_exec()
     return calculate_health.to_dict(orient='records')
+
+@app.post("/health_index_all_subsystem/")
+async def health_index_all_subsystem_post(request: HealthIndexAllSubsystem):
+    calculate_health = health_index_all_subsystem(
+        cursor, request.id_equipment).health_index_all_subsystem_exec()
+    calculate_health_result = calculate_health.to_dict(orient='records')
+    return calculate_health_result.append(INFO_SUB)
 
 @app.post("/calculate_ageing_water_oil_formation/")
 async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWaterOilFormation):

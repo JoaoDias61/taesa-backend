@@ -17,6 +17,9 @@ class HealthIndexPerSubsystem(BaseModel):
     initial_date: str
     final_date: str
     subsystem: Optional[str] = None
+
+class HealthIndexAllSubsystem(BaseModel):
+    id_equipment: int
     
 class CalculateAgeingWaterOilFormation(BaseModel):
     id_equipment: int
