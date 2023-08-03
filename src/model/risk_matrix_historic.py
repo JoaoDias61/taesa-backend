@@ -8,50 +8,42 @@ class risk_matrix_historic:
     def risk_matrix_historic_exec(self):
         query = '''
             SELECT
-                MAX(Equipamento.Descricao) AS descricaoEquipamento
-                , MAX(InstalacaoEletrica.Descricao) AS descricaoInstalacaoEletrica
-                , MAX(gc.Descricao) AS GrupoDeCalculo
-                , MAX(Calculo.Codigo) AS CodigoCalculo
-                , MAX(Calculo.Descricao) AS DescricaoCalculo
-                , ExecucaoCalculoResultado.Resultado 
-            	, CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) AS UltimaAtualizacaoCalculo
+            	MAX(Equipamento.Descricao) AS descricaoEquipamento
+            	, MAX(InstalacaoEletrica.Descricao) AS descricaoInstalacaoEletrica
+            	, MAX(GrupoCalculo.Descricao) AS GrupoDeCalculo
+            	, MAX(Calculo.Codigo) AS CodigoCalculo
+            	, MAX(Calculo.Descricao) AS DescricaoCalculo
+            	, ExecucaoCalculoResultado.Resultado AS HI
+            	, MIN(CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE)) AS DataCalculo
             FROM EngineCalculo.CalculoResultado As ExecucaoCalculoResultado
             INNER JOIN EngineCalculo.CalculoResultadoEquipamento 
             	ON CalculoResultadoEquipamento.CalculoId = ExecucaoCalculoResultado.CalculoId 
-                AND CalculoResultadoEquipamento.JobId = ExecucaoCalculoResultado.JobId
+            	AND CalculoResultadoEquipamento.JobId = ExecucaoCalculoResultado.JobId
             INNER JOIN EngineCalculo.Calculo
             	ON Calculo.Id = ExecucaoCalculoResultado.CalculoId
             INNER JOIN EngineCalculo.CalculoResultadoVariavel As EntradaVariavel 
             	ON ExecucaoCalculoResultado.JobId = EntradaVariavel.JobId
             INNER JOIN EngineCalculo.RevisaoVariavel As RevisaoVariavel 
-                ON RevisaoVariavel.VariavelId = EntradaVariavel.VariavelId 
+            	ON RevisaoVariavel.VariavelId = EntradaVariavel.VariavelId 
             	AND RevisaoVariavel.Revisao = EntradaVariavel.Revisao
-            INNER JOIN [EngineCalculo].[Variavel] 
-            	ON Variavel.Id = EntradaVariavel.VariavelId 
             INNER JOIN Equipamento
             	ON Equipamento.Id = CalculoResultadoEquipamento.EquipamentoId
-            INNER JOIN EquipamentoInstalacaoEletrica 
-            	ON Equipamento.Id = EquipamentoInstalacaoEletrica.EquipamentoId
+            INNER JOIN EngineCalculo.GrupoCalculo AS GrupoCalculo
+            	ON GrupoCalculo.Id = Calculo.GrupoCalculoId
+            INNER JOIN EquipamentoInstalacaoEletrica
+            	ON EquipamentoInstalacaoEletrica.EquipamentoId = Equipamento.Id
             INNER JOIN InstalacaoEletrica
-            	ON  InstalacaoEletrica.Id = EquipamentoInstalacaoEletrica.InstalacaoEletricaId
-            INNER JOIN Familia AS f 
-            	ON f.Id = Equipamento.FamiliaId
-            INNER JOIN EngineCalculo.CategoriaVariavel AS cv 
-            	ON cv.Id = Variavel.CategoriaVariavelId
-            LEFT JOIN EngineCalculo.GrupoCalculo AS gc 
-            	ON gc.Id = Calculo.GrupoCalculoId
+            	ON InstalacaoEletrica.Id = EquipamentoInstalacaoEletrica.InstalacaoEletricaId
             WHERE 
             	Calculo.Codigo IN ('IE_TR' ,'I2_TR')
-            	AND Equipamento.Descricao = ?
+            	AND Equipamento.Id = ?
             GROUP BY 
-            	ExecucaoCalculoResultado.Resultado 
-            	, CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE)
-            ORDER BY 
-            	CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE)
-                , MAX(InstalacaoEletrica.Descricao)
-            	, MAX(Equipamento.Descricao)
+            	ExecucaoCalculoResultado.Resultado
+            ORDER BY
+            	MIN(CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE))
+	            , MAX(Calculo.Codigo)
                     '''
-        self.cursor.execute(query, self.description)
+        self.cursor.execute(query, self.id_equipment)
         result_sql = self.cursor.fetchall()
 
         colunas = [column[0] for column in self.cursor.description]

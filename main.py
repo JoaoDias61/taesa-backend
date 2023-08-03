@@ -112,6 +112,6 @@ async def calculate_risk_matrix(request: RiskMatrix):
 
 @app.post("/risk_matrix_historic")
 async def calculate_risk_matrix_historic(request: RiskMatrixHistoric):
-    result = risk_matrix_historic(cursor, request.description)
+    result = risk_matrix_historic(cursor, request.id_equipment)
     filter_result = result.risk_matrix_historic_exec()
     return filter_result.to_dict(orient='records')

@@ -29,4 +29,4 @@ class RiskMatrix(BaseModel):
     id_equipment: Optional[int] = None
 
 class RiskMatrixHistoric(BaseModel):
-    description: str
+    id_equipment: int
