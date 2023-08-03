@@ -1,9 +1,9 @@
 import pandas as pd
 
 class risk_matrix_historic:
-    def __init__(self, cursor, description):
+    def __init__(self, cursor, id_equipment):
         self.cursor = cursor
-        self.description = description
+        self.id_equipment = id_equipment
 
     def risk_matrix_historic_exec(self):
         query = '''
@@ -54,17 +54,8 @@ class risk_matrix_historic:
         self.cursor.execute(query, self.description)
         result_sql = self.cursor.fetchall()
 
-        columns = [
-                   'descricaoEquipamento',
-                   'descricaoInstalacaoEletrica',
-                   'GrupoDeCalculo',
-                   'CodigoCalculo',
-                   'DescricaoCalculo',
-                   'Resultado',
-                   'UltimaAtualizacaoCalculo'
-                   ]
-
-        data = [dict(zip(columns, row)) for row in result_sql]
+        colunas = [column[0] for column in self.cursor.description]
+        data = [dict(zip(colunas, row)) for row in result_sql]
         df = pd.DataFrame(data)
-        
+
         return df
