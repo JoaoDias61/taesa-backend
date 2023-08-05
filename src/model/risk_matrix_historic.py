@@ -50,4 +50,21 @@ class risk_matrix_historic:
         data = [dict(zip(colunas, row)) for row in result_sql]
         df = pd.DataFrame(data)
 
+        grouped_data = df.groupby('DataCalculo').apply(lambda x: x.to_dict(orient='records')).tolist()
+
+        # Iterate through each group and check if both "IE_TR" and "I2_TR" are present
+        for i in range(1, len(grouped_data)):
+            current_group = grouped_data[i]
+            previous_group = grouped_data[i - 1]
+
+            # Check if "IE_TR" is missing in the current group
+            if not any(record['CodigoCalculo'] == 'IE_TR' for record in current_group):
+                current_group.append([record for record in previous_group if record['CodigoCalculo'] == 'IE_TR'][0])
+
+            # Check if "I2_TR" is missing in the current group
+            if not any(record['CodigoCalculo'] == 'I2_TR' for record in current_group):
+                current_group.append([record for record in previous_group if record['CodigoCalculo'] == 'I2_TR'][0])
+
+        return grouped_data
+
         return df

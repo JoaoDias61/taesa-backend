@@ -5,14 +5,6 @@ class calculate_ageing_water_oil_formation:
         self.cursor = cursor
         self.id_equipment = id_equipment
 
-    def get_enrolment_number(self, descricao_variavel):
-        if 'Envelhecimento' in descricao_variavel:
-            return 'Envelhecimento'
-        elif 'Temperatura' in descricao_variavel:
-            return 'Temperatura'
-        else:
-            return 'Água'
-
     def calculate_ageing_water_oil_formation_exec(self):
         query = '''
                 SELECT 
@@ -56,6 +48,9 @@ class calculate_ageing_water_oil_formation:
                      , 'MONIT_ENV_ISOL1' -- Monitor do Envelhecimento da Isolação - Enrolamento 1
                      , 'MONIT_ENV_ISOL2' -- Monitor do Envelhecimento da Isolação - Enrolamento 2
                      , 'MONIT_ENV_ISOL3' -- Monitor do Envelhecimento da Isolação - Enrolamento 3
+                     ,  'TEMP_E1_ON_VALOR'
+                     ,  'TEMP_E2_ON_VALOR'
+                     ,  'TEMP_E3_ON_VALOR'
 
                             )
                         AND crv.Valor != 0
@@ -70,6 +65,27 @@ class calculate_ageing_water_oil_formation:
                 ORDER BY CAST(crv.DataMedicao AS DATE) DESC
                         , e.Descricao DESC
         '''
+
+        def get_variavel(descricao_variavel):
+            if 'Envelhecimento' in descricao_variavel:
+                return 'Envelhecimento'
+            elif 'Temperatura no Enrolamento' in descricao_variavel:
+                return 'Temperatura no Enrolamento'
+            elif 'Temperatura' in descricao_variavel:
+                return 'Temperatura'
+            else:
+                return 'Água'
+
+        def get_enrolment_number(descricao_variavel):
+                if '1' in descricao_variavel:
+                    return 1
+                elif '2' in descricao_variavel:
+                    return 2
+                elif '3' in descricao_variavel:
+                    return 3
+                else:
+                    return 0
+            
         self.cursor.execute(query, self.id_equipment)
         result_sql = self.cursor.fetchall()
         
@@ -77,8 +93,20 @@ class calculate_ageing_water_oil_formation:
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)
 
-        df['Enrolamento'] = df['DescricaoVariavel'].apply(self.get_enrolment_number)
+        df['Variavel'] = df['DescricaoVariavel'].apply(get_variavel)
+        df['Enrolamento'] = df['DescricaoVariavel'].apply(get_enrolment_number)
+        novo_dataframe = df[df['DescricaoVariavel'].str.contains('Valor da Temperatura no Enrolamento')]
+        indices_para_drop = df[df['DescricaoVariavel'].str.contains('Valor da Temperatura no Enrolamento')].index
+        df = df.drop(indices_para_drop)
+        df = df.loc[df.groupby(['Variavel'])['Valor'].idxmax()]
 
-        df = df.loc[df.groupby(['Enrolamento'])['Valor'].idxmax()]
+        def adjust_df(df):
+            if 'Temperatura' in df['Variavel'].values:
+                valor_enrolamento_temperatura = df.loc[df['Variavel'] == 'Temperatura', 'Enrolamento'].values[0]
+                df_enrolamento_2 = novo_dataframe.loc[novo_dataframe['Enrolamento'] == valor_enrolamento_temperatura]
+                df_concat = pd.concat([df, df_enrolamento_2])
+                return df_concat
+            else:
+                return df
 
-        return df
+        return adjust_df(df)

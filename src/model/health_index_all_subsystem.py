@@ -69,7 +69,7 @@ class health_index_all_subsystem:
 
         self.cursor.execute(query, self.id_equipment)
         result_sql = self.cursor.fetchall()
-        columns = ['descricaoEquipamento', 'descricaoInstalacaoEletrica', 'GrupoDeCalculo', 'CodigoCalculo', 'Familia', 'Descricao', 'UltimaAtualizacaoCalculo', 'HealtIndex']
+        columns = ['Descricao', 'descricaoInstalacaoEletrica', 'GrupoDeCalculo', 'CodigoCalculo', 'descricaoEquipamento', 'UltimaAtualizacaoCalculo', 'HealtIndex']
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)
         return df

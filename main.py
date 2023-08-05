@@ -1,3 +1,4 @@
+from src.model.evolution_time import evolution_time
 from src.model.health_index_all_subsystem import health_index_all_subsystem
 from src.model.risk_matrix_historic import risk_matrix_historic
 from src.common.types import CalculateAgeingWaterOilFormation, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix, RiskMatrixHistoric
@@ -96,7 +97,7 @@ async def health_index_all_subsystem_post(request: HealthIndexAllSubsystem):
     calculate_health = health_index_all_subsystem(
         cursor, request.id_equipment).health_index_all_subsystem_exec()
     calculate_health_result = calculate_health.to_dict(orient='records')
-    return calculate_health_result.append(INFO_SUB)
+    return calculate_health_result
 
 @app.post("/calculate_ageing_water_oil_formation/")
 async def calculate_ageing_water_oil_formation_post(request: CalculateAgeingWaterOilFormation):
@@ -114,4 +115,15 @@ async def calculate_risk_matrix(request: RiskMatrix):
 async def calculate_risk_matrix_historic(request: RiskMatrixHistoric):
     result = risk_matrix_historic(cursor, request.id_equipment)
     filter_result = result.risk_matrix_historic_exec()
-    return filter_result.to_dict(orient='records')
+    return filter_result
+
+@app.post("/evolution_time")
+async def request_evolution_time(request: RiskMatrixHistoric):
+    result = evolution_time(cursor, request.id_equipment)
+    filter_result = result.evolution_time_exec()
+    return filter_result
+
+
+
+
+
