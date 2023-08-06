@@ -126,7 +126,7 @@ async def request_evolution_time(request: RiskMatrixHistoric):
 
 @app.post("/evolution_time_list")
 async def request_evolution_time(request: EvolutionTimeList):
-    result = evolution_time_list(cursor, request.id_equipment, request.initial_date, request.final_date)
+    result = evolution_time_list(cursor, request.id_equipment, request.identifier, request.initial_date, request.final_date)
     filter_result = result.evolution_time_list_exec()
     return filter_result
 
