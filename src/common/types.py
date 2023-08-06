@@ -30,3 +30,8 @@ class RiskMatrix(BaseModel):
 
 class RiskMatrixHistoric(BaseModel):
     id_equipment: int
+
+class EvolutionTimeList(BaseModel):
+    id_equipment: int
+    initial_date: str
+    final_date: str

@@ -1,5 +1,5 @@
+from datetime import datetime, timedelta
 import pandas as pd
-import datetime
 
 from src.ecm.ECM import ECM
 
@@ -37,11 +37,11 @@ SUBSYSTEM_PARAMS = {
       {"nome": "Corrente do enrolamento 3", "identificador": 11657},
       {"nome": "Hidrogênio dissolvido no óleo", "identificador": 2363},
       {"nome": "Tendência de evolução do hidrogênio", "identificador": 2364},
-      {"nome": "H2 - Hidrogênio", "identificador": 8492},
-      {"nome": "CH4 - Metano", "identificador": 8493},
-      {"nome": "C2H6 - Etano", "identificador": 8494},
-      {"nome": "C2H4 - Etileno", "identificador": 8495},
-      {"nome": "C2H2 - Acetileno", "identificador": 8496},
+      {"nome": "H2 - Hidrogênio, identificador", "identificador": 8492},
+      {"nome": "CH4 - Metano, identificador", "identificador": 8493},
+      {"nome": "C2H6 - Etano:, identificador", "identificador": 8494},
+      {"nome": "C2H4 - Etileno, identificador", "identificador": 8495},
+      {"nome": "C2H2 - Acetileno, identificador", "identificador": 8496},
       {"nome": "CO - Monóxido de Carbono", "identificador": 8497},
       {"nome": "CO2 - Dióxido de Carbono", "identificador": 8498},
       {"nome": "N2 - Nitrogênio", "identificador": 8499},
@@ -49,16 +49,18 @@ SUBSYSTEM_PARAMS = {
     ]
   }
 
-
-class evolution_time:
-    def __init__(self, cursor, id_equipment):
+class evolution_time_list:
+    def __init__(self, cursor, id_equipment, initial_date, final_date):
         self.cursor = cursor
         self.id_equipment = id_equipment
+        self.initial_date = initial_date
+        self.final_date = final_date
 
-    def extract_identifiers(self, data_params):
+
+    def extract_identifiers(self, data):
         identifiers = []
 
-        for entry in data_params:
+        for entry in data:
             for typeObject in entry['tipoObjetos']:
                 for data_objetos in typeObject['objetos']:
                     for variavel in data_objetos['variaveis']:
@@ -87,7 +89,20 @@ class evolution_time:
 
         return identifiers
 
-    def evolution_time_exec(self):
+    def gerar_datas_intervalo(self, data_inicial, data_final):
+        data_inicial = datetime.strptime(data_inicial, '%Y-%m-%dT%H:%M:%S')
+        data_final = datetime.strptime(data_final, '%Y-%m-%dT%H:%M:%S')
+
+        datas_intervalo = []
+
+        data_atual = data_inicial
+        while data_atual <= data_final:
+            datas_intervalo.append(data_atual.strftime('%Y-%m-%dT%H:%M:%S'))
+            data_atual += timedelta(days=1)
+
+        return datas_intervalo
+
+    def evolution_time_list_exec(self):
         query = '''
             SELECT e.Id, e.Descricao, e.EquipamentoSigmaId FROM Equipamento AS e
             WHERE 
@@ -101,10 +116,21 @@ class evolution_time:
         data = [dict(zip(colunas, row)) for row in result_sql]
         df = pd.DataFrame(data)
         ecm_id = int(df.EquipamentoSigmaId.values[0])
+        
+        data_inicial = self.initial_date + 'T00:00:00'
+        data_final = self.final_date + 'T00:00:00'
+
+        intervalo_de_datas = self.gerar_datas_intervalo(data_inicial, data_final)
+
         ecm = ECM()
-        data = ecm.request_results(datetime.datetime.now()
-                                   .strftime('%Y-%m-%dT%H:%M:%S'), 
-                                   datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S'), 
-                                   ecm_id)
-        data_extract = self.extract_identifiers(data)
-        return data_extract
+
+        ecm_list = []
+        for time in intervalo_de_datas:
+            data = ecm.request_results(time,
+                                        time, 
+                                        ecm_id)
+            data_extract = self.extract_identifiers(data)
+            ecm_list.append(data_extract)
+
+
+        return ecm_list
