@@ -9,7 +9,7 @@ class ECM:
     url_req_variables = url_base + "api/eam/obter/variaveis"
     url_req_results = url_base + "api/eam/obter/dadosvariaveis"
 
-    def request_results(self, start_dt: any, end_dt: any, ecm_id: int) -> list:
+    def request_results(self, start_dt: str, end_dt: str, ecm_id: int) -> list:
         json_req = self.build_request(start_dt, end_dt, ecm_id)
         headers = {
             'Content-Type': 'application/json'
@@ -30,15 +30,17 @@ class ECM:
         for tipo in response[0]["tipoObjetos"]:
             for obj in tipo['objetos']:
                 for k in obj['variaveis']:
-
-                    if k['valor'] == 'NaN' or k['valor'] == '':
-                        k.pop('valor')
+                    if 'valor' in k:
+                        if k['valor'] == 'NaN' or k['valor'] == '':
+                            k.pop('valor')
+                    else: 
+                        pass
 
         return response
 
 
 
-    def build_request(self, start_dt: any, end_dt: any, ecm_id: int) -> list[dict]:
+    def build_request(self, start_dt: str, end_dt: str, ecm_id: int) -> list[dict]:
         ecm_variables = self.request_variables()
 
         req_body = [

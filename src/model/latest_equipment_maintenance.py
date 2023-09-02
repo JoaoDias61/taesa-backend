@@ -4,7 +4,7 @@ import pandas as pd
 class health_index_per_equipment:
     def __init__(self, cursor, descricao, familia):
         self.cursor = cursor
-        self.codigo_operacional = descricao
+        self.descricao = descricao
         self.familia = familia
 
     def health_index_per_equipment_exec(self):

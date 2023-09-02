@@ -2,14 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class HealthIndexPerEquipment(BaseModel):
-    family: str
-
-class HealthIndexPerSubsystem(BaseModel):
-    family: str
-    description: str
-    subsystem: str
-    initial_date: str
-    final_date: str
+    id_equipment: int
 
 class HealthIndexPerSubsystem(BaseModel):
     family: str
@@ -25,7 +18,7 @@ class CalculateAgeingWaterOilFormation(BaseModel):
     id_equipment: int
 
 class RiskMatrix(BaseModel):
-    family: Optional[str] = None, 
+    family: Optional[str] = None,  # type: ignore
     id_equipment: Optional[int] = None
 
 class RiskMatrixHistoric(BaseModel):
@@ -36,3 +29,15 @@ class EvolutionTimeList(BaseModel):
     identifier: int
     initial_date: str
     final_date: str
+
+class LatestMaintenance(BaseModel):
+    id_equipment: int
+
+class ProbabilityFailureStatus(BaseModel):
+    id_equipment: int
+
+class CalculateOptimalDate(BaseModel):
+    id_equipment: int
+    subsystem: str
+    cost_PM: float
+    cost_CM: float

@@ -1,8 +1,12 @@
+from src.model.calculate_optimal_date import calculate_optimal_date
+from src.model.probability_failure_status import probability_failure_status
+from src.model.scheduled_maintenance import scheduled_maintenance
+from src.model.latest_maintenance import latest_maintenance
 from src.model.evolution_time_list import evolution_time_list
 from src.model.evolution_time import evolution_time
 from src.model.health_index_all_subsystem import health_index_all_subsystem
 from src.model.risk_matrix_historic import risk_matrix_historic
-from src.common.types import CalculateAgeingWaterOilFormation, EvolutionTimeList, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, RiskMatrix, RiskMatrixHistoric
+from src.common.types import CalculateAgeingWaterOilFormation, CalculateOptimalDate, EvolutionTimeList, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, LatestMaintenance, RiskMatrix, RiskMatrixHistoric
 from src.model.calculate_ageing_water_oil_formation import calculate_ageing_water_oil_formation
 from src.model.health_index_per_equipment import health_index_per_equipment
 from src.model.health_index_per_subsystem import health_index_per_subsystem
@@ -10,8 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.model.risk_matrix import risk_matrix
 from src.model.filter_data import filter_data
-import re
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI
 
 from dotenv import load_dotenv
 import pyodbc
@@ -40,13 +43,6 @@ app.add_middleware(
 
 INFO_SUB = [
     "Parte Ativa",
-    "Comutador sobrecarga",
-    "Parte Ativa",
-    "Acessórios",
-    "Ambiente",
-    "Tanque",
-    "Resfriamento",
-    "Preservação do Óleo Isolante",
     "Bucha"
 ]
 
@@ -82,7 +78,7 @@ def get_data():
 @app.post("/health_index_per_equipment/")
 async def health_index_per_equipment_post(request: HealthIndexPerEquipment):
     calculate_health = health_index_per_equipment(
-        cursor, request.family).health_index_per_equipment_exec()
+        cursor, request.id_equipment).health_index_per_equipment_exec()
     result = calculate_health
     return result.to_dict(orient='records')
 
@@ -125,11 +121,34 @@ async def request_evolution_time(request: RiskMatrixHistoric):
     return filter_result
 
 @app.post("/evolution_time_list")
-async def request_evolution_time(request: EvolutionTimeList):
+async def request_evolution_time_list(request: EvolutionTimeList):
     result = evolution_time_list(cursor, request.id_equipment, request.identifier, request.initial_date, request.final_date)
     filter_result = result.evolution_time_list_exec()
     return filter_result
 
+@app.post("/latest_maintenance")
+async def latest_maintenance_list(request: LatestMaintenance):
+    result = latest_maintenance(cursor, request.id_equipment)
+    filter_result = result.latest_maintenance_exec()
+    return filter_result.to_dict(orient='records')
+
+@app.post("/scheduled_maintenance")
+async def scheduled_maintenance_list(request: LatestMaintenance):
+    result = scheduled_maintenance(cursor, request.id_equipment)
+    filter_result = result.scheduled_maintenance_exec()
+    return filter_result.to_dict(orient='records')
+
+@app.post("/probability_failure_status")
+async def probability_failure_status_list(request: LatestMaintenance):
+    result = probability_failure_status(cursor, request.id_equipment)
+    filter_result = result.probability_failure_status_exec()
+    return filter_result
+
+@app.post("/calculate_optimal_date")
+async def calculate_optimal_date_list(request: CalculateOptimalDate):
+    result = calculate_optimal_date(cursor, request.id_equipment, request.subsystem, request.cost_PM, request.cost_CM)
+    filter_result = result.calculate_optimal_date_exec()
+    return filter_result
 
 
 

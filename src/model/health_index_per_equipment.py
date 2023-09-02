@@ -1,9 +1,9 @@
 import pandas as pd
 
 class health_index_per_equipment:
-    def __init__(self, cursor, family):
+    def __init__(self, cursor, id_equipment):
         self.cursor = cursor
-        self.family = family
+        self.id_equipment = id_equipment
 
     def health_index_per_equipment_exec(self):
         query = '''
@@ -45,7 +45,7 @@ class health_index_per_equipment:
                         ON gc.Id = Calculo.GrupoCalculoId
                 WHERE
                     1 = 1
-                    AND f.Nome = ?
+                    AND e.Id = ?
                     AND CAST(ExecucaoCalculoResultado.UltimaAtualizacao AS DATE) = (SELECT MAX(CAST(UltimaAtualizacao AS DATE)) FROM [EngineCalculo].[CalculoResultado])
                     AND gc.Descricao = 'Health Index do Subsistema'
                     AND Calculo.Descricao IN ('Ambiente', 'Bucha', 'Comutador Sob Carga', 'Outros Acessórios', 'Outros Dados', 'Parte Ativa', 'Preservação do Óleo Isolante', 'Resfriamento', 'Tanque Principal')
@@ -61,7 +61,7 @@ class health_index_per_equipment:
                     ie.Descricao,
                     e.Descricao
         '''
-        self.cursor.execute(query, self.family)
+        self.cursor.execute(query, self.id_equipment)
         result_sql = self.cursor.fetchall()
 
         columns = ['Descricao', 'CodigoCalculo', 'Descricao', 'UltimaAtualizacaoCalculo',

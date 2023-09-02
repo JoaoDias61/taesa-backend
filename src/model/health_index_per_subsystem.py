@@ -76,4 +76,8 @@ class health_index_per_subsystem:
                    'descricaoEquipamento', 'HealtIndex','UltimaAtualizacaoCalculo']
         data = [dict(zip(columns, row)) for row in result_sql]
         df = pd.DataFrame(data)
+
+        if self.subsystem is not None:
+            df["subsystem"] = self.subsystem
+        
         return df
