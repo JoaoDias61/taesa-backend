@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 import pandas as pd
-import json
-import os
 
 from src.ecm.ECM import ECM
 
@@ -51,40 +49,32 @@ class evolution_time_list:
         self.initial_date = initial_date
         self.final_date = final_date
 
-
     def extract_identifiers(self, data_params):
-        identifiers = []
+        data = []
 
         for entry in data_params:
-            for typeObject in entry['tipoObjetos']:
-                for data_objetos in typeObject['objetos']:
-                    for variavel in data_objetos['variaveis']:
-                        for subsystem in SUBSYSTEM_PARAMS:
-                            if variavel['identificador'] == subsystem['identificador'] and 'valor' in variavel and 'Bucha' in subsystem['subsistema']:
-                                identifiers.append({
-                                    "identificador": variavel['identificador'],
-                                    "unidadeMedida": subsystem['unidadeMedida'],
-                                    "codigo": variavel['codigo'],
-                                    "subsistema": "Bucha",
-                                    "valor": variavel['valor'],
-                                    "dataMedicao": variavel['dataMedicao'],
-                                    "tipoRetorno": variavel['tipoRetorno'],
-                                    "nome": subsystem['nome'],
-                                })
-                        for subsystem in SUBSYSTEM_PARAMS:
-                            if variavel['identificador'] == subsystem['identificador'] and 'valor' in variavel and 'Parte Ativa' in subsystem['subsistema']:
-                                identifiers.append({
-                                    "identificador": variavel['identificador'],
-                                    "unidadeMedida": subsystem['unidadeMedida'],
-                                    "codigo": variavel['codigo'],
-                                    "subsistema": "Parte Ativa",
-                                    "valor": variavel['valor'],
-                                    "dataMedicao": variavel['dataMedicao'],
-                                    "tipoRetorno": variavel['tipoRetorno'],
-                                    "nome": subsystem['nome'],
-                                })
+            for subsystem in SUBSYSTEM_PARAMS:
+                if self.identifier == subsystem['identificador'] and 'valor' in entry and 'Bucha' in subsystem['subsistema']:
+                        data.append({
+                            "identificador": self.identifier,
+                            "unidadeMedida": subsystem['unidadeMedida'],
+                            "subsistema": "Bucha",
+                            "valor": entry['valor'],
+                            "dataMedicao": entry['data'],
+                            "nome": subsystem['nome'],
+                        })
+                for subsystem in SUBSYSTEM_PARAMS:
+                    if self.identifier == subsystem['identificador'] and 'valor' in entry and 'Parte Ativa' in subsystem['subsistema']:
+                        data.append({
+                            "identificador": self.identifier,
+                            "unidadeMedida": subsystem['unidadeMedida'],
+                            "subsistema": "Bucha",
+                            "valor": entry['valor'],
+                            "dataMedicao": entry['data'],
+                            "nome": subsystem['nome'],
+                        })
 
-        return identifiers
+        return data
 
     def gerar_datas_intervalo(self, data_inicial, data_final):
         data_inicial = datetime.strptime(data_inicial, '%Y-%m-%dT%H:%M:%S')
@@ -117,42 +107,12 @@ class evolution_time_list:
         data_inicial = self.initial_date + 'T00:00:00'
         data_final = self.final_date + 'T00:00:00'
 
-        intervalo_de_datas = self.gerar_datas_intervalo(data_inicial, data_final)
-
-        # ecm = ECM()
-        # ecm_list = []
-        # for time in intervalo_de_datas:
-        #     data = ecm.request_results(time,
-        #                                 time, 
-        #                                 ecm_id)
-        #     data_extract = self.extract_identifiers(data)
-        #     ecm_list.append(data_extract[0])
-        
-        # filter_data = [objeto for objeto in ecm_list if objeto["identificador"] == self.identifier]
-        caminho_pasta_secundaria = os.path.join("src/model/jsons", f"{ecm_id}")
-
-        data = []
-
-        if os.path.exists(caminho_pasta_secundaria) and os.path.isdir(caminho_pasta_secundaria):
-            for nome_arquivo in os.listdir(caminho_pasta_secundaria):
-                caminho_arquivo = os.path.join(caminho_pasta_secundaria, nome_arquivo)
-
-                if os.path.isfile(caminho_arquivo) and nome_arquivo.endswith('.json'):
-                    with open(caminho_arquivo, 'r') as json_file:
-                        dados = json.load(json_file)
-                        data.append(dados)
-
-        teste = []
-
-        for data_extract in data:
-            teste.append(self.extract_identifiers(data_extract))
-
-        filter_data = []
-
-        for objeto in teste:
-            for data_object in objeto:
-                if data_object["identificador"] == self.identifier:
-                    filter_data.append(data_object)
-
-
-        return filter_data  
+        ecm = ECM()
+        data = ecm.request_time_series(data_inicial,
+                                    data_final, 
+                                    ecm_id,
+                                    self.identifier
+                                    )
+        data_extract = self.extract_identifiers(data)
+    
+        return data_extract

@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime
+import json
 
 from src.ecm.ECM import ECM
 
@@ -51,6 +52,7 @@ class evolution_time:
 
         for entry in data_params:
             for typeObject in entry['tipoObjetos']:
+                print(typeObject)
                 for data_objetos in typeObject['objetos']:
                     for variavel in data_objetos['variaveis']:
                         for subsystem in SUBSYSTEM_PARAMS:
@@ -77,7 +79,6 @@ class evolution_time:
                                     "tipoRetorno": variavel['tipoRetorno'],
                                     "nome": subsystem['nome'],
                                 })
-
         return identifiers
 
     def evolution_time_exec(self):
@@ -94,10 +95,22 @@ class evolution_time:
         data = [dict(zip(colunas, row)) for row in result_sql]
         df = pd.DataFrame(data)
         ecm_id = int(df.EquipamentoSigmaId.values[0])
+
+        identificadores=[]
         ecm = ECM()
-        data = ecm.request_results(datetime.datetime.now()
-                                   .strftime('%Y-%m-%dT%H:%M:%S'), 
-                                   datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S'), 
-                                   ecm_id)
-        data_extract = self.extract_identifiers(data)
-        return data_extract
+        for identificador in SUBSYSTEM_PARAMS:
+            data = ecm.request_most_recent(datetime.datetime.now()
+                                       .strftime('%Y-%m-%dT%H:%M:%S'),
+                                       ecm_id,
+                                       identificador['identificador'])
+            identificadores.append(data)
+
+        data_filter = []
+
+        for data_extract in identificadores:
+            data_filter.append(self.extract_identifiers(data_extract))
+
+    
+        return data_filter
+    
+    
