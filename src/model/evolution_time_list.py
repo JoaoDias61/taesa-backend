@@ -10,9 +10,9 @@ SUBSYSTEM_PARAMS = [
       {"nome": "Tendência de evolução da Capacitância 1", "subsistema": "Bucha", "identificador": 2073, "unidadeMedida": "dias"},
       {"nome": "Tendência de evolução da Capacitância 2", "subsistema": "Bucha", "identificador": 2074, "unidadeMedida": "dias"},
       {"nome": "Tendência de evolução da Capacitância 3", "subsistema": "Bucha", "identificador": 2075, "unidadeMedida": "dias"},
-      {"nome": "Tangente Delta", "subsistema": "Bucha", "identificador": 2076, "unidadeMedida": "%"},
-      {"nome": "Tangente Delta", "subsistema": "Bucha", "identificador": 2077, "unidadeMedida": "%"},
-      {"nome": "Tangente Delta", "subsistema": "Bucha", "identificador": 2078, "unidadeMedida": "%"},
+      {"nome": "Tangente Delta 1", "subsistema": "Bucha", "identificador": 2076, "unidadeMedida": "%"},
+      {"nome": "Tangente Delta 2", "subsistema": "Bucha", "identificador": 2077, "unidadeMedida": "%"},
+      {"nome": "Tangente Delta 3", "subsistema": "Bucha", "identificador": 2078, "unidadeMedida": "%"},
       {"nome": "Tendência de evolução da Tangente Delta 1", "subsistema": "Bucha", "identificador": 2079, "unidadeMedida": "%"},
       {"nome": "Tendência de evolução da Tangente Delta 2", "subsistema": "Bucha","identificador": 2080, "unidadeMedida": "%"},
       {"nome": "Tendência de evolução da Tangente Delta 3", "subsistema": "Bucha", "identificador": 2081, "unidadeMedida": "%"},
@@ -55,18 +55,18 @@ class evolution_time_list:
         for entry in data_params:
             for subsystem in SUBSYSTEM_PARAMS:
                 if self.identifier == subsystem['identificador'] and 'valor' in entry and 'Bucha' in subsystem['subsistema']:
-                        data.append({
-                            "identificador": self.identifier,
-                            "unidadeMedida": subsystem['unidadeMedida'],
-                            "subsistema": "Bucha",
-                            "valor": entry['valor'],
-                            "dataMedicao": entry['data'],
-                            "nome": subsystem['nome'],
-                        })
+                    data.append({
+                        "identificador": subsystem['identificador'],
+                        "unidadeMedida": subsystem['unidadeMedida'],
+                        "subsistema": "Bucha",
+                        "valor": entry['valor'],
+                        "dataMedicao": entry['data'],
+                        "nome": subsystem['nome'],
+                    })
                 for subsystem in SUBSYSTEM_PARAMS:
                     if self.identifier == subsystem['identificador'] and 'valor' in entry and 'Parte Ativa' in subsystem['subsistema']:
                         data.append({
-                            "identificador": self.identifier,
+                            "identificador": subsystem['identificador'],
                             "unidadeMedida": subsystem['unidadeMedida'],
                             "subsistema": "Bucha",
                             "valor": entry['valor'],

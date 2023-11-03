@@ -41,3 +41,7 @@ class CalculateOptimalDate(BaseModel):
     subsystem: str
     cost_PM: float
     cost_CM: float
+
+class LoginAuth(BaseModel):
+    email: str
+    password: str

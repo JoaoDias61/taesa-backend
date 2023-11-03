@@ -1,3 +1,4 @@
+from src.model.login import Login
 from src.model.calculate_optimal_date import calculate_optimal_date
 from src.model.probability_failure_status import probability_failure_status
 from src.model.scheduled_maintenance import scheduled_maintenance
@@ -6,7 +7,7 @@ from src.model.evolution_time_list import evolution_time_list
 from src.model.evolution_time import evolution_time
 from src.model.health_index_all_subsystem import health_index_all_subsystem
 from src.model.risk_matrix_historic import risk_matrix_historic
-from src.common.types import CalculateAgeingWaterOilFormation, CalculateOptimalDate, EvolutionTimeList, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, LatestMaintenance, RiskMatrix, RiskMatrixHistoric
+from src.common.types import LoginAuth, CalculateAgeingWaterOilFormation, CalculateOptimalDate, EvolutionTimeList, HealthIndexAllSubsystem, HealthIndexPerEquipment, HealthIndexPerSubsystem, LatestMaintenance, RiskMatrix, RiskMatrixHistoric
 from src.model.calculate_ageing_water_oil_formation import calculate_ageing_water_oil_formation
 from src.model.health_index_per_equipment import health_index_per_equipment
 from src.model.health_index_per_subsystem import health_index_per_subsystem
@@ -14,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.model.risk_matrix import risk_matrix
 from src.model.filter_data import filter_data
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from dotenv import load_dotenv
 import pyodbc
@@ -150,6 +151,15 @@ async def calculate_optimal_date_list(request: CalculateOptimalDate):
     filter_result = result.calculate_optimal_date_exec()
     return filter_result
 
-
-
-
+@app.post("/login")
+async def login(request: LoginAuth):
+    result = Login(email=request.email, password=request.password)
+    filter_result = result.login_exec()
+    
+    if filter_result == "Usuário com senha incorreta":
+        raise HTTPException(status_code=400, detail="Senha incorreta")
+    elif filter_result == "Usuário não encontrado":
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    print(filter_result)
+    return filter_result

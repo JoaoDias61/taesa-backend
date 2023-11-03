@@ -98,19 +98,15 @@ class evolution_time:
 
         identificadores=[]
         ecm = ECM()
+
         for identificador in SUBSYSTEM_PARAMS:
-            data = ecm.request_most_recent(datetime.datetime.now()
-                                       .strftime('%Y-%m-%dT%H:%M:%S'),
-                                       ecm_id,
-                                       identificador['identificador'])
-            identificadores.append(data)
-
-        data_filter = []
-
-        for data_extract in identificadores:
-            data_filter.append(self.extract_identifiers(data_extract))
+                data = ecm.request_most_recent(datetime.datetime.now()
+                                              .strftime('%Y-%m-%dT%H:%M:%S'),
+                                              ecm_id,
+                                              identificador['identificador'])
+                identificadores.extend(self.extract_identifiers(data))
 
     
-        return data_filter
+        return identificadores
     
     

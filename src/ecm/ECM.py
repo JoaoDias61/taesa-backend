@@ -5,7 +5,7 @@ from datetime import *
 
 
 class ECM:
-    url_homolog = "https://d57b-179-111-23-20.ngrok-free.app/"
+    url_homolog = "https://7001-186-202-37-168.ngrok-free.app/"
     url_prod = "http://172.21.184.6:8088/"
     url_base = url_homolog
     url_req_variables = url_base + "api/eam/obter/variaveis"
